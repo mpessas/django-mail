@@ -26,8 +26,10 @@ class MailMixin(object):
         for k, v in kwargs.items():
             setattr(self, k, v)
         self.to_addresses = to
-        self.body = self._render_body(context)
-        self.subject = self._render_subject(context)
+        if not hasattr(self, 'body'):
+            self.body = self._render_body(context)
+        if not hasattr(self, 'subject'):
+            self.subject = self._render_subject(context)
         super(MailMixin, self).__init__(
             self.subject, self.body, self.from_address, self.to_addresses
         )
