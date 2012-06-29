@@ -12,7 +12,7 @@ class MailMixin(object):
     """Base class for all Mail classes."""
 
     from_address = None
-    subject = None
+    subject_template = None
     body_template = None
 
     def __init__(self, to, context):
@@ -25,6 +25,7 @@ class MailMixin(object):
         """
         self.to_addresses = to
         self.body = self._render_body(context)
+        self.subject = self._render_subject(context)
         super(MailMixin, self).__init__(
             self.subject, self.body, self.from_address, self.to_addresses
         )
@@ -32,6 +33,12 @@ class MailMixin(object):
     def _render_body(self, context):
         """Render the body of the email message."""
         return render_to_string(self.body_template, context)
+
+    def _render_subject(self, context):
+        """Render the subject of the email message."""
+        return ''.join(
+            render_to_string(self.subject_template, context).splitlines()
+        )
 
 
 class TextMail(MailMixin, EmailMessage):
