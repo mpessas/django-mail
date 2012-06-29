@@ -15,7 +15,7 @@ class MailMixin(object):
     subject_template = None
     body_template = None
 
-    def __init__(self, to, context):
+    def __init__(self, to, context, **kwargs):
         """
         Initializer.
 
@@ -23,6 +23,8 @@ class MailMixin(object):
         :param context: A ``Context`` instance that will be used to populate
             the email template.
         """
+        for k, v in kwargs.items():
+            setattr(self, k, v)
         self.to_addresses = to
         self.body = self._render_body(context)
         self.subject = self._render_subject(context)
@@ -59,9 +61,9 @@ class TextAltHtmlMail(MailMixin, EmailMultiAlternatives):
 
     html_template = None
 
-    def __init__(self, to, context):
+    def __init__(self, to, context, **kwargs):
+        super(TextAltHtmlMail, self).__init__(to, context, **kwargs)
         self.html_part = self._render_html_body(context)
-        super(TextAltHtmlMail, self).__init__(to, context)
         self.attach_alternative(self.html_part, "text/html")
 
     def _render_html_body(self, context):
