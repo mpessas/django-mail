@@ -66,9 +66,10 @@ class TextAltHtmlMail(MailMixin, EmailMultiAlternatives):
 
     html_template = None
 
-    def __init__(self, to, context, **kwargs):
+    def __init__(self, to, context=None, **kwargs):
         super(TextAltHtmlMail, self).__init__(to, context, **kwargs)
-        self.html_part = self._render_html_body(context)
+        if not hasattr(self, 'html_part'):
+            self.html_part = self._render_html_body(context)
         self.attach_alternative(self.html_part, "text/html")
 
     def _render_html_body(self, context):
