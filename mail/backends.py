@@ -15,14 +15,16 @@ class MailMixin(object):
     subject_template = None
     body_template = None
 
-    def __init__(self, to, context, **kwargs):
+    def __init__(self, to, context=None, **kwargs):
         """
         Initializer.
 
         :param to: A list of email addresses, where the emal should be sent to.
         :param context: A ``Context`` instance that will be used to populate
-            the email template.
+            the email template. It can be ignored, in case the caller specifies
+            the content of the email himself.
         """
+        headers = kwargs.pop('headers', {})
         for k, v in kwargs.items():
             setattr(self, k, v)
         self.to_addresses = to
@@ -31,7 +33,8 @@ class MailMixin(object):
         if not hasattr(self, 'subject'):
             self.subject = self._render_subject(context)
         super(MailMixin, self).__init__(
-            self.subject, self.body, self.from_address, self.to_addresses
+            self.subject, self.body, self.from_address, self.to_addresses,
+            headers=headers
         )
 
     def _render_body(self, context):
